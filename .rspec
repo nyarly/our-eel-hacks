@@ -1,0 +1,10 @@
+--format documentation
+--out last_run
+--color
+--format documentation
+-I spec_help/interpose
+-I lib
+-I spec_help
+--require simplecov
+--require spec_helper
+--pattern *.rb
