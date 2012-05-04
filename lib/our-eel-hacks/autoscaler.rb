@@ -13,15 +13,16 @@ module OurEelHacks
       end
     end
 
-    Limit = Struct.new(:soft, :hard)
-    class UpperLimit
+    class Limit
       def initialize(soft, hard)
         @soft = soft
         @hard = hard
       end
 
       attr_accessor :hard, :soft
+    end
 
+    class UpperLimit < Limit
       def includes?(value)
         return value >= @soft and value <= @hard
       end
@@ -35,7 +36,7 @@ module OurEelHacks
       end
     end
 
-    def LowerLimit < UpperLimit
+    class LowerLimit < Limit
       def includes?(value)
         return value >= @hard and value <= @soft
       end
@@ -49,17 +50,15 @@ module OurEelHacks
       end
     end
 
-    Credentials = Struct.new(:username, :password)
-
     def initialize()
-      @dynos = current_dynos
+      @dynos = nil
       @last_scaled = 0
       @entered_soft = nil
       @soft_side = nil
       @last_reading = nil
 
       @app_name = nil
-      @heroku_credentials = Credentials.new
+      @heroku_api_key = nil
       @min_dynos = 1
       @max_dynos = 10
 
@@ -68,6 +67,17 @@ module OurEelHacks
       @soft_duration = 500
       @scaling_frequency = 200
       @logger = nil
+
+      update_dynos
+    end
+
+    def update_dynos
+      new_value = current_dynos
+      if new_value != dynos
+        @last_scaled = Time.now
+      end
+      @dynos = current_dynos
+      @last_reading = Time.now
     end
 
     def log(msg)
@@ -79,19 +89,21 @@ module OurEelHacks
       yield self
     end
 
-    attr_accessor :min_dynos, :max_dynos, :lower_limits, :upper_limits, :soft_duration, :scaling_frequency, :logger
+    attr_accessor :min_dynos, :max_dynos, :lower_limits, :upper_limits, :soft_duration, :scaling_frequency, :logger, :heroku_api_key
     attr_reader :last_scaled, :dynos, :entered_soft, :last_reading
 
     def scale(metric)
-      if (Time.now - last_scaled) * 1000 < @scaling_frequency
+      if (Time.now - last_scaled) * 1000 < scaling_frequency
         return
       end
 
       target_dynos = target_scale(metric)
 
-      target_dynos = [[target_dynos, @max_dynos].min, @min_dynos].max
+      target_dynos = [[target_dynos, max_dynos].min, min_dynos].max
 
       set_dynos(target_dynos)
+
+      update_dynos
     end
 
     def target_scale(metric)
@@ -129,17 +141,16 @@ module OurEelHacks
     end
 
     def current_dynos
-      heroku.info(@app_name])[:dynos].to_i
+      heroku.info(app_name])[:dynos].to_i
     end
 
     def heroku
-      @heroku ||= Heroku::Client.new(@username, @password)
+      @heroku ||= Heroku::Client.new("", heroku_api_key)
     end
 
     def set_dynos(count)
-      return if target_dynos == @dynos
-      heroku.set_dynos(@app_name], count)
-      @dynos = current_dynos
+      return if count == dynos
+      heroku.set_dynos(app_name], count)
       @last_scaled = Time.now
     end
   end
