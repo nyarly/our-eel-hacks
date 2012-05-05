@@ -4,6 +4,7 @@ source :rubygems
 gem 'ruby-debug19', :platform => :ruby_19
 
 group :test do
+  gem 'rspec', '~> 2.9.0'
   gem 'fakeweb'
   gem 'vcr'
 end

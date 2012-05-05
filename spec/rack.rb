@@ -1,3 +1,4 @@
+require 'spec_helper'
 require 'our-eel-hacks/rack'
 
 describe OurEelHacks::Rack do
