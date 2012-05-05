@@ -393,4 +393,248 @@ http_interactions:
         Database 5MB","price":{"cents":0,"unit":"month"}}]'
     http_version: '1.1'
   recorded_at: Fri, 04 May 2012 21:07:14 GMT
+- request:
+    method: get
+    uri: https://:FakeApiKey@api.heroku.com/apps/sbmp
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      accept:
+      - ! '*/*; q=0.5, application/xml'
+      accept-encoding:
+      - gzip, deflate
+      x-heroku-api-version:
+      - '2'
+      user-agent:
+      - heroku-gem/2.25.0
+      x-ruby-version:
+      - 1.9.3
+      x-ruby-platform:
+      - i686-linux
+      authorization:
+      - Basic OjYzMWJiYjJhYWI1NjhkOTNmMTk3Mzc1MDY5NjM0N2Y3ZjlmZWE4ZjY=
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      server:
+      - nginx
+      date:
+      - Sat, 05 May 2012 01:26:14 GMT
+      content-type:
+      - application/xml; charset=utf-8
+      connection:
+      - keep-alive
+      status:
+      - 200 OK
+      etag:
+      - ! '"e32026fbb1ab6519a01cf80025f08660"'
+      x-runtime:
+      - '45'
+      content-length:
+      - '871'
+      cache-control:
+      - private, max-age=0, must-revalidate
+      strict-transport-security:
+      - max-age=500
+    body:
+      encoding: US-ASCII
+      string: ! "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<app>\n  <created-at
+        type=\"datetime\">2012-02-26T21:42:49-08:00</created-at>\n  <dynos type=\"integer\">0</dynos>\n
+        \ <name>sbmp</name>\n  <repo-size type=\"integer\">220864512</repo-size>\n
+        \ <requested-stack nil=\"true\"></requested-stack>\n  <slug-size type=\"integer\">85061632</slug-size>\n
+        \ <stack>cedar</stack>\n  <workers type=\"integer\">0</workers>\n  <create-status
+        type=\"symbol\">complete</create-status>\n  <repo-migrate-status type=\"symbol\">complete</repo-migrate-status>\n
+        \ <buildpack-provided-description>Ruby/Rails</buildpack-provided-description>\n
+        \ <id>app3049118@heroku.com</id>\n  <domain_name>sbmp.herokuapp.com</domain_name>\n
+        \ <owner>aws@salesbump.com</owner>\n  <web_url>http://sbmp.herokuapp.com/</web_url>\n
+        \ <git_url>git@heroku.com:sbmp.git</git_url>\n  <database_size></database_size>\n
+        \ <stateless-codex>true</stateless-codex>\n</app>\n"
+    http_version: '1.1'
+  recorded_at: Sat, 05 May 2012 01:24:12 GMT
+- request:
+    method: get
+    uri: https://:FakeApiKey@api.heroku.com/apps/sbmp/collaborators
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      accept:
+      - ! '*/*; q=0.5, application/xml'
+      accept-encoding:
+      - gzip, deflate
+      x-heroku-api-version:
+      - '2'
+      user-agent:
+      - heroku-gem/2.25.0
+      x-ruby-version:
+      - 1.9.3
+      x-ruby-platform:
+      - i686-linux
+      authorization:
+      - Basic OjYzMWJiYjJhYWI1NjhkOTNmMTk3Mzc1MDY5NjM0N2Y3ZjlmZWE4ZjY=
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      server:
+      - nginx
+      date:
+      - Sat, 05 May 2012 01:26:15 GMT
+      content-type:
+      - application/xml; charset=utf-8
+      connection:
+      - keep-alive
+      status:
+      - 200 OK
+      etag:
+      - ! '"89032632d1ae99be4cc6bc10767a1adc"'
+      x-runtime:
+      - '23'
+      content-length:
+      - '270'
+      cache-control:
+      - private, max-age=0, must-revalidate
+      strict-transport-security:
+      - max-age=500
+    body:
+      encoding: US-ASCII
+      string: ! "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<collaborators>\n  <collaborator>\n
+        \   <email>aws@salesbump.com</email>\n    <access>edit</access>\n  </collaborator>\n
+        \ <collaborator>\n    <email>judson@lrdesign.com</email>\n    <access>edit</access>\n
+        \ </collaborator>\n</collaborators>\n"
+    http_version: '1.1'
+  recorded_at: Sat, 05 May 2012 01:24:12 GMT
+- request:
+    method: get
+    uri: https://:FakeApiKey@api.heroku.com/apps/sbmp/addons
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      x-heroku-api-version:
+      - '2'
+      user-agent:
+      - heroku-gem/2.25.0
+      x-ruby-version:
+      - 1.9.3
+      x-ruby-platform:
+      - i686-linux
+      authorization:
+      - Basic OjYzMWJiYjJhYWI1NjhkOTNmMTk3Mzc1MDY5NjM0N2Y3ZjlmZWE4ZjY=
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      server:
+      - nginx
+      date:
+      - Sat, 05 May 2012 01:26:16 GMT
+      content-type:
+      - application/json; charset=utf-8
+      connection:
+      - keep-alive
+      status:
+      - 200 OK
+      etag:
+      - ! '"3af6412d378895e01d969c520cc169c5"'
+      x-runtime:
+      - '36'
+      content-length:
+      - '818'
+      cache-control:
+      - private, max-age=0, must-revalidate
+      strict-transport-security:
+      - max-age=500
+    body:
+      encoding: US-ASCII
+      string: ! '[{"beta":false,"attachable":false,"configured":"mysql2://sbmpdev:sbmpdev2244@dev.c2wvnyihe8jq.us-east-1.rds.amazonaws.com/sbmp","url":"http://devcenter.heroku.com/articles/amazon_rds","state":"public","name":"amazon_rds","description":"Amazon
+        RDS","price":{"cents":0,"unit":"month"}},{"beta":false,"attachable":false,"configured":true,"url":null,"state":"public","name":"redistogo:medium","description":"Redis
+        To Go Medium","price":{"cents":11000,"unit":"month"}},{"beta":false,"attachable":false,"configured":true,"url":null,"state":"public","name":"sendgrid:starter","description":"SendGrid
+        Starter","price":{"cents":0,"unit":"month"}},{"beta":false,"attachable":false,"configured":true,"url":null,"state":"public","name":"shared-database:5mb","description":"Shared
+        Database 5MB","price":{"cents":0,"unit":"month"}}]'
+    http_version: '1.1'
+  recorded_at: Sat, 05 May 2012 01:24:13 GMT
+- request:
+    method: get
+    uri: https://:FakeApiKey@api.heroku.com/apps/sbmp/ps
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      x-heroku-api-version:
+      - '2'
+      user-agent:
+      - heroku-gem/2.25.0
+      x-ruby-version:
+      - 1.9.3
+      x-ruby-platform:
+      - i686-linux
+      authorization:
+      - Basic OjYzMWJiYjJhYWI1NjhkOTNmMTk3Mzc1MDY5NjM0N2Y3ZjlmZWE4ZjY=
+  response:
+    status:
+      code: 200
+      message: !binary |-
+        T0s=
+    headers:
+      !binary "c2VydmVy":
+      - !binary |-
+        bmdpbng=
+      !binary "ZGF0ZQ==":
+      - !binary |-
+        U2F0LCAwNSBNYXkgMjAxMiAwMToyNjoxNyBHTVQ=
+      !binary "Y29udGVudC10eXBl":
+      - !binary |-
+        YXBwbGljYXRpb24vanNvbjsgY2hhcnNldD11dGYtOA==
+      !binary "dHJhbnNmZXItZW5jb2Rpbmc=":
+      - !binary |-
+        Y2h1bmtlZA==
+      !binary "Y29ubmVjdGlvbg==":
+      - !binary |-
+        a2VlcC1hbGl2ZQ==
+      !binary "c3RhdHVz":
+      - !binary |-
+        MjAwIE9L
+      !binary "ZXRhZw==":
+      - !binary |-
+        IjFhYzEyZTkwMTk4ZDAwOWE2ZjI0YmI3YWRiMGUyMjI1Ig==
+      !binary "eC1ydW50aW1l":
+      - !binary |-
+        ODY=
+      !binary "Y2FjaGUtY29udHJvbA==":
+      - !binary |-
+        cHJpdmF0ZSwgbWF4LWFnZT0wLCBtdXN0LXJldmFsaWRhdGU=
+      !binary "c3RyaWN0LXRyYW5zcG9ydC1zZWN1cml0eQ==":
+      - !binary |-
+        bWF4LWFnZT01MDA=
+      !binary "Y29udGVudC1lbmNvZGluZw==":
+      - !binary |-
+        Z3ppcA==
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAAAAAAAAA9yU0U7DIBSGX4UQLztHW2ihL+FivDOmYe2pa0YpAp1O47sL
+        JsarmS5bemG4Oj/wn8OXc3j8wE5Nz7jCrOt4Q3gtAQROsDSm1nKAsOO2gwnK
+        ZPo2RDQXpCSMB6UZh0HqKG4n3SpA8AYNsrJXDjmwB7DI73qNVgbdbO7uH6Jt
+        4/tRhxtTtDR2bMC5EL7C9jYNigXdwvthnFw9WYUrPSmVYFDSOAiJ0oKLMsH+
+        aGJhGxcdvZfNLm52UjmIpuD9sXZeevhOhLrRIroLZ3+1EHgrtetjOdDW0gc5
+        I2m2JmxNKErzitIqF2gVHkvwZ3I+J5qRgnFyfU7ZPE5sOU40vYQT42GVJzm5
+        voV9/4JWDUr5X2hGuwc7r4sE50vRySvCL6ZzetrOpDOrdwQXC9IpL6AjeMp5
+        UVx/xvJ/9RcVTBCWl1ebsVl0hCALdlHxQ+fpCwAA//8DAMWdJcvTBgAA
+    http_version: !binary |-
+      MS4x
+  recorded_at: Sat, 05 May 2012 01:24:14 GMT
 recorded_with: VCR 2.1.1
