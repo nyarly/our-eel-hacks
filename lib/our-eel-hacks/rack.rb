@@ -1,3 +1,4 @@
+require 'our-eel-hacks/middleware'
 module OurEelHacks
   class Rack < Middleware
     def initialize(app, env_field, flavor = :web)

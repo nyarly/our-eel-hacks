@@ -10,3 +10,4 @@ pkg
 .yardoc/
 yardoc/
 gh-pages/
+heroku-setup.rb

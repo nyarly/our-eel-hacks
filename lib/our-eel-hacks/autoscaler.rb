@@ -3,13 +3,20 @@ require 'heroku'
 module OurEelHacks
   class Autoscaler
     class << self
-      def instance_for(flavor = :web)
+      def get_instance(flavor)
         flavor = flavor.to_sym
-        @instances ||= {}
-        return @instances[flavor] if @instances.has_key?(flavor)
+        @instances ||= Hash.new{ |h,k| h[k] = self.new }
+        return @instances[flavor]
+      end
 
-        instance = self.new
-        return @instances[flavor] = instance
+      def configure(flavor = :web, &block)
+        get_instance(flavor).configure(&block)
+      end
+
+      def instance_for(flavor = :web)
+        instance = get_instance(flavor)
+        instance.check_settings
+        return instance
       end
     end
 
@@ -24,60 +31,51 @@ module OurEelHacks
 
     class UpperLimit < Limit
       def includes?(value)
-        return value >= @soft and value <= @hard
+        return (@soft < value && value <= @hard)
       end
 
       def >(value)
-        return value > @hard
+        return @soft > value
       end
 
       def <(value)
-        return value < @soft
+        return @hard < value
       end
     end
 
     class LowerLimit < Limit
       def includes?(value)
-        return value >= @hard and value <= @soft
+        return (value >= @hard && value <= @soft)
       end
 
       def >(value)
-        return value > @soft
+        return @hard > value
       end
 
       def <(value)
-        return value < @hard
+        return @soft < value
       end
     end
 
     def initialize()
       @dynos = nil
+      @soft_side = nil
+
       @last_scaled = 0
       @entered_soft = nil
-      @soft_side = nil
       @last_reading = nil
 
       @app_name = nil
+      @ps_type = nil
       @heroku_api_key = nil
+
       @min_dynos = 1
       @max_dynos = 10
-
       @lower_limits = LowerLimit.new(5, 1)
       @upper_limits = UpperLimit.new(30, 50)
       @soft_duration = 500
       @scaling_frequency = 200
       @logger = nil
-
-      update_dynos
-    end
-
-    def update_dynos
-      new_value = current_dynos
-      if new_value != dynos
-        @last_scaled = Time.now
-      end
-      @dynos = current_dynos
-      @last_reading = Time.now
     end
 
     def log(msg)
@@ -87,41 +85,61 @@ module OurEelHacks
 
     def configure
       yield self
+      check_settings
+
+      update_dynos(Time.now)
     end
 
-    attr_accessor :min_dynos, :max_dynos, :lower_limits, :upper_limits, :soft_duration, :scaling_frequency, :logger, :heroku_api_key
-    attr_reader :last_scaled, :dynos, :entered_soft, :last_reading
+    def check_settings
+      errors = []
+      errors << "No heroku api key set" if @heroku_api_key.nil?
+      errors << "No app name set" if @app_name.nil?
+      errors << "No process type set" if @ps_type.nil?
+      raise "OurEelHacks::Autoscaler, configuration problem: " + errors.join(", ") unless errors.empty?
+    end
+
+    attr_accessor :min_dynos, :max_dynos, :lower_limits, :upper_limits, :ps_type,
+      :soft_duration, :scaling_frequency, :logger, :heroku_api_key, :app_name
+    attr_reader :last_scaled, :dynos, :entered_soft, :last_reading, :soft_side
+
+    def elapsed(start, finish)
+      seconds = finish.to_i - start.to_i
+      millis = finish.usec - start.usec
+      return seconds * 1000 + millis
+    end
 
     def scale(metric)
-      if (Time.now - last_scaled) * 1000 < scaling_frequency
+      moment = Time.now
+      if elapsed(last_scaled, moment) < scaling_frequency
         return
       end
 
-      target_dynos = target_scale(metric)
+      target_dynos = target_scale(metric, moment)
 
       target_dynos = [[target_dynos, max_dynos].min, min_dynos].max
 
       set_dynos(target_dynos)
 
-      update_dynos
+      update_dynos(moment)
     end
 
-    def target_scale(metric)
-      if metric < lower_limits
+    def target_scale(metric, moment)
+      if lower_limits > metric
         return dynos - 1
-      elsif metric > upper_limits
+      elsif upper_limits < metric
         return dynos + 1
       elsif
-        return dynos + soft_limit(metric)
+        result = (dynos + soft_limit(metric, moment))
+        return result
       end
     end
 
-    def soft_limit(metric, limits)
-      hit_limit = [lower_limits, upper_limits].find{|lim| lim.include? metric}
+    def soft_limit(metric, moment)
+      hit_limit = [lower_limits, upper_limits].find{|lim| lim.includes? metric}
 
       if soft_side == hit_limit
-        if (entered_soft - Time.now) * 1000 > soft_duration
-          entered_soft = Time.now
+        if elapsed(entered_soft, moment) > soft_duration
+          entered_soft = moment
           case hit_limit
           when upper_limits
             return +1
@@ -133,24 +151,48 @@ module OurEelHacks
         else
           return 0
         end
+      else
+        @entered_soft = moment
       end
 
       @soft_side = hit_limit
-      entered_soft = Time.now
       return 0
     end
 
-    def current_dynos
-      heroku.info(app_name])[:dynos].to_i
+    def dyno_info
+      regexp = /^#{ps_type}[.].*/
+      return heroku.ps(app_name).find_all do |dyno|
+        dyno["process"] =~ regexp
+      end
+    end
+
+    def update_dynos(moment)
+      new_value = dyno_info.count
+      if new_value != dynos
+        @last_scaled = moment
+        @entered_soft = moment
+      end
+      @dynos = new_value
+      @last_reading = moment
+    end
+
+    def dynos_stable?
+      return dyno_info.all? do |dyno|
+        dyno["state"] == "up"
+      end
     end
 
     def heroku
-      @heroku ||= Heroku::Client.new("", heroku_api_key)
+      @heroku ||= Heroku::Client.new("", heroku_api_key).tap do |client|
+        unless client.info(app_name)[:stack] == "cedar"
+          raise "#{self.class.name} built against cedar stack"
+        end
+      end
     end
 
     def set_dynos(count)
-      return if count == dynos
-      heroku.set_dynos(app_name], count)
+      return if count == dynos or not dynos_stable?
+      heroko.ps_scale(app_name, :type => ps_type, :qty => count)
       @last_scaled = Time.now
     end
   end

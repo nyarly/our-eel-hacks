@@ -1,4 +1,4 @@
-require "heroku"
+require 'our-eel-hacks/autoscaler'
 
 module OurEelHacks
   class Middleware
