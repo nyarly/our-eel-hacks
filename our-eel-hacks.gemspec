@@ -20,6 +20,18 @@ Gem::Specification.new do |spec|
   # Do this: y$@"
   # !!find lib bin doc spec spec_help -not -regex '.*\.sw.' -type f 2>/dev/null
   spec.files		= %w[
+    lib/our-eel-hacks/autoscaler.rb
+    lib/our-eel-hacks/rack.rb
+    lib/our-eel-hacks/defer/event-machine.rb
+    lib/our-eel-hacks/sidekiq.rb
+    lib/our-eel-hacks/middleware.rb
+    spec/autoscaler.rb
+    spec/rack.rb
+    spec_help/spec_helper.rb
+    spec_help/gem_test_suite.rb
+    spec_help/cassettes/OurEelHacks_Rack.yml
+    spec_help/cassettes/OurEelHacks_Autoscaler.yml
+    spec_help/file-sandbox.rb
   ]
 
   spec.test_file        = "spec_help/gem_test_suite.rb"
