@@ -1,3 +1,5 @@
+require 'our-eel-hacks/middleware'
+
 module OurEelHacks
   class Sidekiq < Middleware
     def initialize(flavor=:sidekiq)
@@ -11,7 +13,7 @@ module OurEelHacks
     end
 
     def get_queue_length(queue)
-      Sidekiq.redis do |conn|
+      ::Sidekiq.redis do |conn|
         conn.llen("queue:#{queue}") || 0
       end
     end

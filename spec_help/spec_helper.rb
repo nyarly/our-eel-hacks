@@ -11,3 +11,13 @@ end
 RSpec.configure do |config|
   config.extend VCR::RSpec::Macros
 end
+
+$" << "eventmachine"
+
+module EventMachine
+  def self.defer
+    yield
+  end
+end
+
+EM = EventMachine

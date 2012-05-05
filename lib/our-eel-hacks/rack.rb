@@ -1,6 +1,9 @@
 require 'our-eel-hacks/middleware'
+require 'our-eel-hacks/defer/event-machine'
 module OurEelHacks
   class Rack < Middleware
+    include Defer::EventMachine
+
     def initialize(app, env_field, flavor = :web)
       super(flavor)
       @env_field = env_field
