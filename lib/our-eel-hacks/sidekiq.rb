@@ -9,8 +9,7 @@ module OurEelHacks
     end
 
     def call(worker_class, item, queue)
-      autoscale(get_queue_length(queue))
-    ensure
+      autoscale(get_queue_length(queue)) rescue nil
       yield
     end
 

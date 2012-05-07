@@ -11,8 +11,7 @@ module OurEelHacks
     end
 
     def call(env)
-      autoscale(metric_from(env))
-    ensure
+      autoscale(metric_from(env)) rescue nil
       @app.call(env)
     end
 
