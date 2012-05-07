@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name		= "our-eel-hacks"
-  spec.version		= "0.0.1"
+  spec.version		= "0.0.2"
   author_list = {
     "Judson Lester" => "nyarly@gmail.com"
   }
@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
     lib/our-eel-hacks/autoscaler.rb
     lib/our-eel-hacks/rack.rb
     lib/our-eel-hacks/defer/event-machine.rb
+    lib/our-eel-hacks/defer/celluloid.rb
     lib/our-eel-hacks/sidekiq.rb
     lib/our-eel-hacks/middleware.rb
     spec/autoscaler.rb
