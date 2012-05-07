@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    our-eel-hacks (0.0.2)
+    our-eel-hacks (0.0.3)
       heroku (> 0)
 
 GEM
