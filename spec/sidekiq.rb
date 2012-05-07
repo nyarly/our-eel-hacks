@@ -26,6 +26,13 @@ describe OurEelHacks::Sidekiq do
     end
   end
 
+  before :each do
+    future = Celluloid::Future
+    def future.new
+      yield
+    end
+  end
+
   let :middleware do
     OurEelHacks::Sidekiq.new(:test)
   end

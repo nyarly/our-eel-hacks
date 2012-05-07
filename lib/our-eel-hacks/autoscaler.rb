@@ -1,6 +1,13 @@
 require 'heroku'
 
 module OurEelHacks
+  class NullLogger
+    def debug; end
+    def info; end
+    def warn; end
+    def fatal; end
+  end
+
   class Autoscaler
     class << self
       def get_instance(flavor)
@@ -75,12 +82,7 @@ module OurEelHacks
       @upper_limits = UpperLimit.new(30, 50)
       @soft_duration = 500
       @scaling_frequency = 200
-      @logger = nil
-    end
-
-    def log(msg)
-      return if @logger.nil
-      @logger.info(msg)
+      @logger = NullLogger.new
     end
 
     def configure
@@ -109,14 +111,17 @@ module OurEelHacks
     end
 
     def scale(metric)
+      logger.debug{ "Scaling request for #{@ps_type}: metric is: #{metric}" }
       moment = Time.now
       if elapsed(last_scaled, moment) < scaling_frequency
+        logger.debug{ "Not scaling: elapsed #{elapsed(last_scaled, moment)} less than configured #{scaling_frequency}" }
         return
       end
 
       target_dynos = target_scale(metric, moment)
 
       target_dynos = [[target_dynos, max_dynos].min, min_dynos].max
+      logger.debug{ "Target dynos at: #{min_dynos}/#{target_dynos}/#{max_dynos} (vs. current: #{@dynos})" }
 
       set_dynos(target_dynos)
 
@@ -191,8 +196,17 @@ module OurEelHacks
     end
 
     def set_dynos(count)
-      return if count == dynos or not dynos_stable?
-      heroko.ps_scale(app_name, :type => ps_type, :qty => count)
+      if count == dynos
+        logger.debug{ "Not scaling: #{count} ?= #{dynos}" }
+        return
+      end
+
+      if not (stable = dynos_stable?)
+        logger.debug{ "Not scaling: dynos not stable (iow: not all #{ps_type} dynos are up)" }
+        return
+      end
+      logger.info{ "Scaling from #{dynos} to #{count} dynos for #{ps_type}" }
+      heroku.ps_scale(app_name, :type => ps_type, :qty => count)
       @last_scaled = Time.now
     end
   end

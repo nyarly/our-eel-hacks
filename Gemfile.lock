@@ -9,6 +9,7 @@ GEM
   specs:
     addressable (2.2.8)
     archive-tar-minitar (0.5.2)
+    celluloid (0.10.0)
     columnize (0.3.6)
     corundum (0.0.15)
       bundler (~> 1.1.0)
@@ -80,6 +81,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  celluloid
   corundum (~> 0.0.1)
   fakeweb
   our-eel-hacks!

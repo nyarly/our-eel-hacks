@@ -7,6 +7,8 @@ group :test do
   gem 'rspec', '~> 2.9.0'
   gem 'fakeweb'
   gem 'vcr'
+  gem 'celluloid'
+  #gem 'eventmachine'
 end
 
 gem 'rake'

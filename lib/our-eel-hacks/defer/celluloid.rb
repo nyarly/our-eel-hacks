@@ -1,9 +1,10 @@
-require 'eventmachine'
+require 'celluloid'
+
 module OurEelHacks
   module Defer
-    module EventMachine
+    module Celluloid
       def trigger_scaling(*args)
-        EM.defer do
+        ::Celluloid::Future.new do
           super
         end
       end

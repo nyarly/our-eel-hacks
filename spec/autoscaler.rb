@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'our-eel-hacks/rack'
+require 'logger'
 
 describe OurEelHacks::Autoscaler do
   before :each do
@@ -52,6 +53,10 @@ describe OurEelHacks::Autoscaler do
     Time.stub!(:now).and_return(Time.at(starting_time, millis))
   end
 
+  let :logger do
+    Logger.new($stdout).tap{|lgr| lgr.level = Logger::INFO }
+  end
+
   let :autoscaler do
     time_adjust(0)
     OurEelHacks::Autoscaler.new.tap do |test|
@@ -67,8 +72,14 @@ describe OurEelHacks::Autoscaler do
 
         test.upper_limits.soft = 30
         test.upper_limits.hard = 50
+
+        #test.logger = logger
       end
     end
+  end
+
+  let :heroku do
+    autoscaler.heroku
   end
 
   it "should get a count of dynos at start" do
@@ -76,7 +87,7 @@ describe OurEelHacks::Autoscaler do
   end
 
   before :each do
-    autoscaler.stub!(:set_dynos)
+    heroku.stub!(:ps_scale)
     time_adjust(0)
     autoscaler.scale(ideal_value)
   end
@@ -86,14 +97,14 @@ describe OurEelHacks::Autoscaler do
     it "should not scale too soon" do
       time_adjust(scaling_freq - 5)
 
-      autoscaler.should_not_receive(:set_dynos)
+      heroku.should_not_receive(:ps_scale)
       autoscaler.scale(hard_high)
     end
 
     it "should scale up if time has elapsed and hard limit exceeded" do
       time_adjust(scaling_freq + 5)
 
-      autoscaler.should_receive(:set_dynos).with(4)
+      heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 4))
       autoscaler.scale(hard_high)
     end
   end
@@ -104,7 +115,7 @@ describe OurEelHacks::Autoscaler do
     end
 
     it "should scale down if hard lower limit exceeded" do
-      autoscaler.should_receive(:set_dynos).with(2)
+      heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 2))
       autoscaler.scale(hard_low)
     end
   end
@@ -118,7 +129,7 @@ describe OurEelHacks::Autoscaler do
     describe "if soft_duration hasn't elapsed" do
       before :each do
         time_adjust((scaling_freq * 2) + soft_dur - 5)
-        autoscaler.should_receive(:set_dynos).with(3)
+        heroku.should_not_receive(:ps_scale)
       end
 
       it "should not scale up" do
@@ -136,12 +147,12 @@ describe OurEelHacks::Autoscaler do
       end
 
       it "should scale up if above upper soft limit" do
-        autoscaler.should_receive(:set_dynos).with(4)
+        heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 4))
         autoscaler.scale(soft_high)
       end
 
       it "should not scale down if below lower soft limit" do
-        autoscaler.should_receive(:set_dynos).with(3)
+        heroku.should_not_receive(:ps_scale)
         autoscaler.scale(soft_low)
       end
     end
@@ -156,7 +167,7 @@ describe OurEelHacks::Autoscaler do
     describe "if soft_duration hasn't elapsed" do
       before :each do
         time_adjust(scaling_freq * 2 + soft_dur - 5)
-        autoscaler.should_receive(:set_dynos).with(3)
+        heroku.should_not_receive(:ps_scale)
       end
 
       it "should not scale up" do
@@ -174,12 +185,12 @@ describe OurEelHacks::Autoscaler do
       end
 
       it "should not scale up even if above upper soft limit" do
-        autoscaler.should_receive(:set_dynos).with(3)
+        heroku.should_not_receive(:ps_scale)
         autoscaler.scale(soft_high)
       end
 
       it "should scale down if below lower soft limit" do
-        autoscaler.should_receive(:set_dynos).with(2)
+        heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 2))
         autoscaler.scale(soft_low)
       end
     end

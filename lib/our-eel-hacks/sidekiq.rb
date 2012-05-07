@@ -1,9 +1,9 @@
 require 'our-eel-hacks/middleware'
-require 'our-eel-hacks/defer/event-machine'
+require 'our-eel-hacks/defer/celluloid'
 
 module OurEelHacks
   class Sidekiq < Middleware
-    include Defer::EventMachine
+    include Defer::Celluloid
     def initialize(flavor=:sidekiq)
       super
     end
