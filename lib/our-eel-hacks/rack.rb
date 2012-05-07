@@ -13,7 +13,7 @@ module OurEelHacks
     def call(env)
       begin
         autoscale(metric_from(env))
-      rescue =>
+      rescue => ex
         puts "Problem in autoscaling: #{ex.inspect}"
       end
 
