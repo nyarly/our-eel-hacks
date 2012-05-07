@@ -9,7 +9,11 @@ module OurEelHacks
     end
 
     def call(worker_class, item, queue)
-      autoscale(get_queue_length(queue)) rescue nil
+      begin
+        autoscale(get_queue_length(queue))
+      rescue => ex
+        puts "Problem in autoscaling: #{ex.inspect}"
+      end
       yield
     end
 
