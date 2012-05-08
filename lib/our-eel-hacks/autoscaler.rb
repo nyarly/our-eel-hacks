@@ -111,8 +111,10 @@ module OurEelHacks
 
     def elapsed(start, finish)
       seconds = finish.to_i - start.to_i
-      millis = finish.usec - start.usec
-      return seconds * 1000 + millis
+      micros = finish.usec - start.usec
+      diff = seconds * 1000 + micros / 1000
+      logger.debug{ "Elapsed: #{start.to_s}:#{finish.to_s} : #{diff}ms" }
+      return diff
     end
 
     def scale(metric)

@@ -50,11 +50,11 @@ describe OurEelHacks::Autoscaler do
   end
 
   def time_adjust(millis)
-    Time.stub!(:now).and_return(Time.at(starting_time, millis))
+    Time.stub!(:now).and_return(Time.at(starting_time, millis * 1000))
   end
 
   let :logger do
-    Logger.new($stdout).tap{|lgr| lgr.level = Logger::INFO }
+    Logger.new($stdout).tap{|lgr| lgr.level = Logger::DEBUG }
   end
 
   let :autoscaler do
@@ -73,7 +73,7 @@ describe OurEelHacks::Autoscaler do
         test.upper_limits.soft = 30
         test.upper_limits.hard = 50
 
-        #test.logger = logger
+        test.logger = logger
       end
     end
   end
