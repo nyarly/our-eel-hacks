@@ -21,7 +21,9 @@ module OurEelHacks
     end
 
     def metric_from(env)
-      Integer(env[@env_field]) rescue 0
+      (Integer(env[@env_field]) rescue 0).tap{|val|
+        puts "#{@env_field} => #{env[@env_field]} : #{val}"
+      }
     end
   end
 
