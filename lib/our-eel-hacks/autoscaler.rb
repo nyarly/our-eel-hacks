@@ -99,8 +99,10 @@ module OurEelHacks
       errors << "No heroku api key set" if @heroku_api_key.nil?
       errors << "No app name set" if @app_name.nil?
       errors << "No process type set" if @ps_type.nil?
-      logger.warn{ "Problems configuring Autoscaler: #{errors.inspect}" }
-      raise "OurEelHacks::Autoscaler, configuration problem: " + errors.join(", ") unless errors.empty?
+      unless errors.empty?
+        logger.warn{ "Problems configuring Autoscaler: #{errors.inspect}" }
+        raise "OurEelHacks::Autoscaler, configuration problem: " + errors.join(", ")
+      end
     end
 
     attr_accessor :min_dynos, :max_dynos, :lower_limits, :upper_limits, :ps_type,
