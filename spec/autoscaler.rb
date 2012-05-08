@@ -73,7 +73,7 @@ describe OurEelHacks::Autoscaler do
         test.upper_limits.soft = 30
         test.upper_limits.hard = 50
 
-        test.logger = logger
+        #test.logger = logger
       end
     end
   end
