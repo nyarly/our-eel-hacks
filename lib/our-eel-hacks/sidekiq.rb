@@ -10,7 +10,7 @@ module OurEelHacks
 
     def call(worker_class, item, queue)
       begin
-        autoscale(get_queue_length(queue))
+        autoscale(get_queue_length(queue).tap{|length| puts "Queue length: #{length}"})
       rescue => ex
         puts "Problem in autoscaling: #{ex.inspect}"
       end

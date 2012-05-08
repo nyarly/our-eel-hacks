@@ -17,7 +17,7 @@ module OurEelHacks
       end
 
       def configure(flavor = :web, &block)
-        get_instance(flavor).configure(&block)
+        get_instance(flavor).configure(flavor, &block)
       end
 
       def instance_for(flavor = :web)
@@ -85,11 +85,13 @@ module OurEelHacks
       @logger = NullLogger.new
     end
 
-    def configure
+    def configure(flavor = nil)
       yield self
       check_settings
+      logger.info{ "Autoscaler configured for #{flavor || "{{unknown flavor}}"}"}
 
       update_dynos(Time.now)
+      logger.debug{ self.inspect }
     end
 
     def check_settings
@@ -97,6 +99,7 @@ module OurEelHacks
       errors << "No heroku api key set" if @heroku_api_key.nil?
       errors << "No app name set" if @app_name.nil?
       errors << "No process type set" if @ps_type.nil?
+      logger.warn{ "Problems configuring Autoscaler: #{errors.inspect}" }
       raise "OurEelHacks::Autoscaler, configuration problem: " + errors.join(", ") unless errors.empty?
     end
 
