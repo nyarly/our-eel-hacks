@@ -68,8 +68,8 @@ module OurEelHacks
       @dynos = nil
       @soft_side = nil
 
-      @last_scaled = 0
-      @entered_soft = nil
+      @last_scaled = Time.at(0)
+      @entered_soft = Time.at(0)
       @last_reading = nil
 
       @app_name = nil
@@ -133,6 +133,8 @@ module OurEelHacks
       set_dynos(target_dynos)
 
       update_dynos(moment)
+    rescue => ex
+      logger.warn{ "Problem scaling: #{ex.inspect}" }
     end
 
     def target_scale(metric, moment)
