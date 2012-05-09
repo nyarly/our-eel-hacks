@@ -3,7 +3,11 @@ module OurEelHacks
   module Defer
     module EventMachine
       def trigger_scaling(*args)
-        EM.defer do
+        if ::EM.reactor_running?
+          ::EM.defer do
+            super
+          end
+        else
           super
         end
       end

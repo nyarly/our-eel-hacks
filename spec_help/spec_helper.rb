@@ -18,6 +18,10 @@ module EventMachine
   def self.defer
     yield
   end
+
+  def self.reactor_running?
+    true
+  end
 end
 
 EM = EventMachine
