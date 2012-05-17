@@ -11,3 +11,4 @@ pkg
 yardoc/
 gh-pages/
 heroku-setup.rb
+.sass-cache/

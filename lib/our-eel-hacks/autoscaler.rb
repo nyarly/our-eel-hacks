@@ -119,7 +119,7 @@ module OurEelHacks
     end
 
     attr_accessor :min_dynos, :max_dynos, :lower_limits, :upper_limits, :ps_type,
-      :soft_duration, :scaling_frequency, :logger, :heroku_api_key, :app_name
+      :soft_duration, :scaling_frequency, :logger, :heroku_api_key, :app_name, :heroku_rate_limit, :heroku_rate_limit_margin
     attr_reader :last_scaled, :dynos, :entered_soft, :last_reading, :soft_side, :millis_til_next_scale
 
     def elapsed(start, finish)
