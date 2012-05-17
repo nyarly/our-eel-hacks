@@ -10,6 +10,7 @@ module Corundum
     rspec = RSpec.new(tk)
     cov = SimpleCov.new(tk, rspec) do |cov|
       cov.threshold = 90
+      cov.test_options << "-r spec_helper"
     end
     gem = GemBuilding.new(tk)
     cutter = GemCutter.new(tk,gem)

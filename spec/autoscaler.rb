@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'our-eel-hacks/rack'
 require 'logger'
 
