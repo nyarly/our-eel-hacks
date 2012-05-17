@@ -68,6 +68,8 @@ module OurEelHacks
       @dynos = nil
       @soft_side = nil
 
+      @memoed_dyno_info = nil
+
       @last_scaled = Time.at(0)
       @entered_soft = Time.at(0)
       @last_reading = nil
@@ -80,8 +82,14 @@ module OurEelHacks
       @max_dynos = 10
       @lower_limits = LowerLimit.new(5, 1)
       @upper_limits = UpperLimit.new(30, 50)
-      @soft_duration = 500
-      @scaling_frequency = 200
+
+      @soft_duration = 10000
+      @scaling_frequency = 5000
+      @heroku_rate_limit = 80_000
+      @heroku_rate_limit_margin = 0.1
+
+      @millis_til_next_scale = nil
+
       @logger = NullLogger.new
     end
 
@@ -90,15 +98,20 @@ module OurEelHacks
       check_settings
       logger.info{ "Autoscaler configured for #{flavor || "{{unknown flavor}}"}"}
 
-      update_dynos(Time.now)
-      logger.debug{ self.inspect }
+      update_dynos(dyno_info.count, Time.now)
     end
 
+    MILLIS_PER_DAY = 24 * 60 * 60 * 1000
     def check_settings
       errors = []
       errors << "No heroku api key set" if @heroku_api_key.nil?
       errors << "No app name set" if @app_name.nil?
       errors << "No process type set" if @ps_type.nil?
+      if (MILLIS_PER_DAY / @heroku_rate_limit) *
+        (1.0 - @heroku_rate_limit_margin) *
+        API_CALLS_PER_SCALE > @scaling_frequency
+        errors << "Scaling frequency will lock up Heroku"
+      end
       unless errors.empty?
         logger.warn{ "Problems configuring Autoscaler: #{errors.inspect}" }
         raise "OurEelHacks::Autoscaler, configuration problem: " + errors.join(", ")
@@ -107,7 +120,7 @@ module OurEelHacks
 
     attr_accessor :min_dynos, :max_dynos, :lower_limits, :upper_limits, :ps_type,
       :soft_duration, :scaling_frequency, :logger, :heroku_api_key, :app_name
-    attr_reader :last_scaled, :dynos, :entered_soft, :last_reading, :soft_side
+    attr_reader :last_scaled, :dynos, :entered_soft, :last_reading, :soft_side, :millis_til_next_scale
 
     def elapsed(start, finish)
       seconds = finish.to_i - start.to_i
@@ -117,22 +130,29 @@ module OurEelHacks
       return diff
     end
 
+    API_CALLS_PER_SCALE = 2
     def scale(metric)
       logger.debug{ "Scaling request for #{@ps_type}: metric is: #{metric}" }
       moment = Time.now
-      if elapsed(last_scaled, moment) < scaling_frequency
-        logger.debug{ "Not scaling: elapsed #{elapsed(last_scaled, moment)} less than configured #{scaling_frequency}" }
+      if elapsed(last_scaled, moment) < millis_til_next_scale
+        logger.debug{ "Not scaling: elapsed #{elapsed(last_scaled, moment)} less than computed #{millis_til_next_scale}" }
         return
       end
+
+      clear_dyno_info
+
+      starting_wait = millis_til_next_scale
+
+      update_dynos(dyno_info.count, moment)
 
       target_dynos = target_scale(metric, moment)
 
       target_dynos = [[target_dynos, max_dynos].min, min_dynos].max
       logger.debug{ "Target dynos at: #{min_dynos}/#{target_dynos}/#{max_dynos} (vs. current: #{@dynos})" }
 
-      set_dynos(target_dynos)
+      set_dynos(target_dynos, moment)
 
-      update_dynos(moment)
+      break_cadence(starting_wait)
     rescue => ex
       logger.warn{ "Problem scaling: #{ex.inspect}" }
     end
@@ -173,21 +193,34 @@ module OurEelHacks
       return 0
     end
 
-    def dyno_info
-      regexp = /^#{ps_type}[.].*/
-      return heroku.ps(app_name).find_all do |dyno|
-        dyno["process"] =~ regexp
+    def break_cadence(starting_wait)
+      if starting_wait > millis_til_next_scale
+        @millis_til_next_scale = rand((starting_wait..@millis_til_next_scale))
       end
     end
 
-    def update_dynos(moment)
-      new_value = dyno_info.count
+    def update_dynos(new_value, moment)
       if new_value != dynos
+        @millis_til_next_scale = scaling_frequency * new_value
         @last_scaled = moment
         @entered_soft = moment
       end
       @dynos = new_value
       @last_reading = moment
+    end
+
+    def clear_dyno_info
+      @memoed_dyno_info = nil
+    end
+
+    def dyno_info
+      return @memoed_dyno_info ||=
+        begin
+          regexp = /^#{ps_type}[.].*/
+          heroku.ps(app_name).find_all do |dyno|
+            dyno["process"] =~ regexp
+          end
+        end
     end
 
     def dynos_stable?
@@ -204,7 +237,7 @@ module OurEelHacks
       end
     end
 
-    def set_dynos(count)
+    def set_dynos(count,moment)
       if count == dynos
         logger.debug{ "Not scaling: #{count} ?= #{dynos}" }
         return
@@ -216,7 +249,7 @@ module OurEelHacks
       end
       logger.info{ "Scaling from #{dynos} to #{count} dynos for #{ps_type}" }
       heroku.ps_scale(app_name, :type => ps_type, :qty => count)
-      @last_scaled = Time.now
+      update_dynos(count, moment)
     end
   end
 end

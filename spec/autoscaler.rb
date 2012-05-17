@@ -18,11 +18,11 @@ describe OurEelHacks::Autoscaler do
   end
 
   let :scaling_freq do
-    200
+    2500
   end
 
   let :soft_dur do
-    500
+    5000
   end
 
   let :ideal_value do
@@ -43,6 +43,14 @@ describe OurEelHacks::Autoscaler do
 
   let :hard_low do
     -10
+  end
+
+  let :dyno_count do
+    3
+  end
+
+  let :expected_scale_frequency do
+    scaling_freq * dyno_count
   end
 
   let! :starting_time do
@@ -83,7 +91,7 @@ describe OurEelHacks::Autoscaler do
   end
 
   it "should get a count of dynos at start" do
-    autoscaler.dynos.should == 3 #happens to be the number of web dynos right now
+    autoscaler.dynos.should == dyno_count #comes from the VCR cassette
   end
 
   before :each do
@@ -95,14 +103,14 @@ describe OurEelHacks::Autoscaler do
   describe "scaling frequency" do
 
     it "should not scale too soon" do
-      time_adjust(scaling_freq - 5)
+      time_adjust(expected_scale_frequency - 5)
 
       heroku.should_not_receive(:ps_scale)
       autoscaler.scale(hard_high)
     end
 
     it "should scale up if time has elapsed and hard limit exceeded" do
-      time_adjust(scaling_freq + 5)
+      time_adjust(expected_scale_frequency + 5)
 
       heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 4))
       autoscaler.scale(hard_high)
@@ -111,7 +119,7 @@ describe OurEelHacks::Autoscaler do
 
   describe "hard limits" do
     before :each do
-      time_adjust(scaling_freq + 5)
+      time_adjust(expected_scale_frequency + 5)
     end
 
     it "should scale down if hard lower limit exceeded" do
@@ -122,13 +130,13 @@ describe OurEelHacks::Autoscaler do
 
   describe "soft upper limit" do
     before :each do
-      time_adjust(scaling_freq * 2)
+      time_adjust(expected_scale_frequency * 2)
       autoscaler.scale(soft_high)
     end
 
     describe "if soft_duration hasn't elapsed" do
       before :each do
-        time_adjust((scaling_freq * 2) + soft_dur - 5)
+        time_adjust((expected_scale_frequency * 2) + soft_dur - 5)
         heroku.should_not_receive(:ps_scale)
       end
 
@@ -143,7 +151,7 @@ describe OurEelHacks::Autoscaler do
 
     describe "if soft_duration has elapsed" do
       before :each do
-        time_adjust(scaling_freq * 2 + soft_dur + 5)
+        time_adjust(expected_scale_frequency * 2 + soft_dur + 5)
       end
 
       it "should scale up if above upper soft limit" do
@@ -160,13 +168,13 @@ describe OurEelHacks::Autoscaler do
 
   describe "soft lower limit" do
     before :each do
-      time_adjust(scaling_freq * 2)
+      time_adjust(expected_scale_frequency * 2)
       autoscaler.scale(soft_low)
     end
 
     describe "if soft_duration hasn't elapsed" do
       before :each do
-        time_adjust(scaling_freq * 2 + soft_dur - 5)
+        time_adjust(expected_scale_frequency * 2 + soft_dur - 5)
         heroku.should_not_receive(:ps_scale)
       end
 
@@ -181,7 +189,7 @@ describe OurEelHacks::Autoscaler do
 
     describe "if soft_duration has elapsed" do
       before :each do
-        time_adjust(scaling_freq * 2 + soft_dur + 5)
+        time_adjust(expected_scale_frequency * 2 + soft_dur + 5)
       end
 
       it "should not scale up even if above upper soft limit" do
