@@ -56,8 +56,17 @@ describe OurEelHacks::Autoscaler do
     Time.now
   end
 
+  before :each do
+    @time_index = 0
+  end
+
   def time_adjust(millis)
+    @time_index = millis
     Time.stub!(:now).and_return(Time.at(starting_time, millis * 1000))
+  end
+
+  def time_advance(millis)
+    time_adjust(@time_index + millis)
   end
 
   let :logger do
@@ -80,7 +89,7 @@ describe OurEelHacks::Autoscaler do
         test.upper_limits.soft = 30
         test.upper_limits.hard = 50
 
-        #test.logger = logger
+        test.logger = logger
       end
     end
   end
@@ -112,6 +121,7 @@ describe OurEelHacks::Autoscaler do
       time_adjust(expected_scale_frequency + 5)
 
       heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 4))
+      p autoscaler.millis_til_next_scale
       autoscaler.scale(hard_high)
     end
   end
@@ -124,6 +134,24 @@ describe OurEelHacks::Autoscaler do
     it "should scale down if hard lower limit exceeded" do
       heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 2))
       autoscaler.scale(hard_low)
+    end
+
+    it "should adjust its timing to break cadence after scaling down" :pending => "building VCR cassette" do
+      autoscaler.scale(hard_low)
+      autoscaler.millis_til_next_scale.should < expected_scale_frequency
+      autoscaler.millis_til_next_scale.should > 2 * scaling_freq
+
+      time_advance(autoscaler.millis_til_next_scale + 5)
+
+      autoscaler.scale(ideal_value)
+
+      autoscaler.millis_til_next_scale.should == 2 * scaling_freq
+
+      time_advance((2 * scaling_freq) + 5)
+
+      autoscaler.scale(hard_low)
+      autoscaler.millis_til_next_scale.should < 2 * scaling_freq
+      autoscaler.millis_til_next_scale.should > scaling_freq
     end
   end
 

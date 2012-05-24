@@ -99,6 +99,7 @@ module OurEelHacks
       logger.info{ "Autoscaler configured for #{flavor || "{{unknown flavor}}"}"}
 
       update_dynos(dyno_info.count, Time.now)
+      update_scaling_delay(0)
     end
 
     MILLIS_PER_DAY = 24 * 60 * 60 * 1000
@@ -152,7 +153,7 @@ module OurEelHacks
 
       set_dynos(target_dynos, moment)
 
-      break_cadence(starting_wait)
+      update_scaling_delay(starting_wait)
     rescue => ex
       logger.warn{ "Problem scaling: #{ex.inspect} \t#{ex.backtrace.join("\t\n")}" }
     end
@@ -193,15 +194,15 @@ module OurEelHacks
       return 0
     end
 
-    def break_cadence(starting_wait)
+    def update_scaling_delay(starting_wait)
+      @millis_til_next_scale = scaling_frequency * @dynos
       if starting_wait > millis_til_next_scale
-        @millis_til_next_scale = rand((starting_wait..@millis_til_next_scale))
+        @millis_til_next_scale = rand((@millis_til_next_scale..starting_wait))
       end
     end
 
     def update_dynos(new_value, moment)
       if new_value != dynos
-        @millis_til_next_scale = scaling_frequency * new_value
         @last_scaled = moment
         @entered_soft = moment
       end
