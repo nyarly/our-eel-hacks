@@ -197,7 +197,8 @@ module OurEelHacks
     def update_scaling_delay(starting_wait)
       @millis_til_next_scale = scaling_frequency * @dynos
       if starting_wait > millis_til_next_scale
-        @millis_til_next_scale = rand((@millis_til_next_scale..starting_wait))
+        logger.debug{ "Adjusting scaling delay for cadence between #{@millis_til_next_scale.inspect} and #{starting_wait.inspect}" }
+        @millis_til_next_scale += rand(starting_wait - @millis_til_next_scale)
       end
     end
 
