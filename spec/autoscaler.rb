@@ -89,7 +89,7 @@ describe OurEelHacks::Autoscaler do
         test.upper_limits.soft = 30
         test.upper_limits.hard = 50
 
-        test.logger = logger
+        #test.logger = logger
       end
     end
   end
@@ -121,7 +121,6 @@ describe OurEelHacks::Autoscaler do
       time_adjust(expected_scale_frequency + 5)
 
       heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 4))
-      p autoscaler.millis_til_next_scale
       autoscaler.scale(hard_high)
     end
   end
@@ -136,7 +135,7 @@ describe OurEelHacks::Autoscaler do
       autoscaler.scale(hard_low)
     end
 
-    it "should adjust its timing to break cadence after scaling down" :pending => "building VCR cassette" do
+    it "should adjust its timing to break cadence after scaling down", :pending => "building VCR cassette" do
       autoscaler.scale(hard_low)
       autoscaler.millis_til_next_scale.should < expected_scale_frequency
       autoscaler.millis_til_next_scale.should > 2 * scaling_freq
