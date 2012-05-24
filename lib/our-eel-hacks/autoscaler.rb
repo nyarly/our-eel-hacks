@@ -154,7 +154,7 @@ module OurEelHacks
 
       break_cadence(starting_wait)
     rescue => ex
-      logger.warn{ "Problem scaling: #{ex.inspect}" }
+      logger.warn{ "Problem scaling: #{ex.inspect} \t#{ex.backtrace.join("\t\n")}" }
     end
 
     def target_scale(metric, moment)

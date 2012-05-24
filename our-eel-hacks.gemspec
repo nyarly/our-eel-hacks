@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name		= "our-eel-hacks"
-  spec.version		= "0.0.12"
+  spec.version		= "0.0.13"
   author_list = {
     "Judson Lester" => "nyarly@gmail.com"
   }
@@ -59,7 +59,7 @@ Gem::Specification.new do |spec|
   spec.rdoc_options	+= %w{--main doc/README }
   spec.rdoc_options	+= ["--title", "#{spec.name}-#{spec.version} RDoc"]
 
-  spec.add_dependency("heroku", "> 0")
+  spec.add_dependency("heroku", ">= 2.25.0")
 
   spec.post_install_message = "Another tidy package brought to you by Judson"
 end
