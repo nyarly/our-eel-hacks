@@ -17,7 +17,7 @@ describe OurEelHacks::Autoscaler do
   end
 
   let :soft_dur do
-    5000
+    8000
   end
 
   let :ideal_value do
@@ -87,7 +87,7 @@ describe OurEelHacks::Autoscaler do
 
         #JDL: useful for debugging spec fails
         #Irritating in general use
-        #test.logger = logger
+        test.logger = logger
       end
     end
   end
@@ -110,6 +110,7 @@ describe OurEelHacks::Autoscaler do
   def no_requests
     OurEelHacks::HerokuClient.processing_budget = 0
     heroku.should_not_receive(:ps_scale)
+    heroku.should_not_receive(:ps)
   end
 
   describe "scaling frequency" do
@@ -129,6 +130,17 @@ describe OurEelHacks::Autoscaler do
 
       heroku.should_receive(:ps_scale).with(app_name, "web", 4)
       autoscaler.scale(hard_high)
+    end
+
+    it "should not reconsider scaling even if we don't scale" do
+      time_advance(expected_scale_frequency + 5)
+      expect do
+        autoscaler.scale(ideal_value)
+      end.to change(autoscaler, :last_scaled)
+
+      no_requests
+      time_advance(expected_scale_frequency - 10)
+      autoscaler.scale(ideal_value)
     end
   end
 
@@ -170,7 +182,7 @@ describe OurEelHacks::Autoscaler do
     describe "if soft_duration hasn't elapsed" do
       before :each do
         time_adjust((expected_scale_frequency * 2) + soft_dur - 5)
-        no_requests
+        heroku.should_not_receive(:ps_scale)
       end
 
       it "should not scale up" do

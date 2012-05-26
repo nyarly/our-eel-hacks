@@ -72,7 +72,6 @@ module OurEelHacks
 
       @last_scaled = Time.at(0)
       @entered_soft = Time.at(0)
-      @last_reading = nil
 
       @app_name = nil
       @ps_type = nil
@@ -207,11 +206,10 @@ module OurEelHacks
 
     def update_dynos(new_value, moment)
       if new_value != dynos
-        @last_scaled = moment
         @entered_soft = moment
       end
       @dynos = new_value
-      @last_reading = moment
+      @last_scaled = moment
     end
 
     def clear_dyno_info
