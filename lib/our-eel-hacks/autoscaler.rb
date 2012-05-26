@@ -235,7 +235,7 @@ module OurEelHacks
     end
 
     def heroku
-      @heroku ||= HerokuClient.new(logger, "", heroku_api_key)
+      @heroku ||= HerokuClient.new(logger, heroku_api_key)
     end
 
     def set_dynos(count,moment)
@@ -249,7 +249,7 @@ module OurEelHacks
         return
       end
       logger.info{ "Scaling from #{dynos} to #{count} dynos for #{ps_type}" }
-      heroku.ps_scale(app_name, :type => ps_type, :qty => count)
+      heroku.ps_scale(app_name, ps_type, count)
       update_dynos(count, moment)
     end
   end

@@ -2,11 +2,7 @@ require 'our-eel-hacks/rack'
 require 'logger'
 
 describe OurEelHacks::Autoscaler do
-  before :each do
-    FakeWeb.allow_net_connect = false
-  end
-
-  use_vcr_cassette :record => :once
+  use_vcr_cassette "OurEelHacks"
 
   let :app_name do
     "sbmp"
@@ -131,7 +127,7 @@ describe OurEelHacks::Autoscaler do
     it "should scale up if time has elapsed and hard limit exceeded" do
       time_adjust(expected_scale_frequency + 5)
 
-      heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 4))
+      heroku.should_receive(:ps_scale).with(app_name, "web", 4)
       autoscaler.scale(hard_high)
     end
   end
@@ -142,7 +138,7 @@ describe OurEelHacks::Autoscaler do
     end
 
     it "should scale down if hard lower limit exceeded" do
-      heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 2))
+      heroku.should_receive(:ps_scale).with(app_name, "web", 2)
       autoscaler.scale(hard_low)
     end
 
@@ -196,7 +192,7 @@ describe OurEelHacks::Autoscaler do
       end
 
       it "should scale up if above upper soft limit" do
-        heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 4))
+        heroku.should_receive(:ps_scale).with(app_name, "web", 4)
         autoscaler.scale(soft_high)
       end
 
@@ -239,7 +235,8 @@ describe OurEelHacks::Autoscaler do
       end
 
       it "should scale down if below lower soft limit" do
-        heroku.should_receive(:ps_scale).with(app_name, hash_including(:qty => 2))
+        heroku.should_receive(:ps_scale).with(app_name, "web", 2)
+
         autoscaler.scale(soft_low)
       end
     end

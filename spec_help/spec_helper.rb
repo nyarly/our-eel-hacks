@@ -4,8 +4,8 @@ require 'vcr'
 
 VCR.configure do |c|
   c.cassette_library_dir     = 'spec_help/cassettes'
-  c.hook_into                :fakeweb
-  c.default_cassette_options = { :record => :new_episodes }
+  c.hook_into                :excon
+  c.default_cassette_options = { :record => :once }
 end
 
 RSpec.configure do |config|
@@ -14,18 +14,27 @@ end
 
 require 'our-eel-hacks/heroku-client'
 class OurEelHacks::HerokuClient
-  alias real_process process
+  alias real_ps ps
+  alias real_ps_scale ps_scale
 
   class << self
     attr_accessor :processing_budget
   end
 
-  def process(*args, &block)
+  def ps(*args, &block)
     #puts caller.grep %r{#{File::expand_path("../..",__FILE__)}}
     if (self.class.processing_budget -= 1) < 0
       raise "Exhausted processing budget"
     end
-    real_process(*args, &block)
+    real_ps(*args, &block)
+  end
+
+  def ps_scale(*args, &block)
+    #puts caller.grep %r{#{File::expand_path("../..",__FILE__)}}
+    if (self.class.processing_budget -= 1) < 0
+      raise "Exhausted processing budget"
+    end
+    real_ps_scale(*args, &block)
   end
 end
 

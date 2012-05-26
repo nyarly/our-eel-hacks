@@ -7,7 +7,7 @@ class Sidekiq;
 end
 
 describe OurEelHacks::Sidekiq do
-  use_vcr_cassette :record => :once
+  use_vcr_cassette "OurEelHacks"
 
   let :app_name do
     "sbmp"

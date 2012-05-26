@@ -1,0 +1,173 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.heroku.com/apps/sbmp/ps
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip
+      User-Agent:
+      - heroku-rb/0.2.1
+      X-Heroku-API-Version:
+      - '3'
+      X-Ruby-Version:
+      - 1.9.3
+      X-Ruby-Platform:
+      - i686-linux
+  response:
+    status:
+      code: 200
+      message:
+    headers:
+      Cache-Control:
+      - private, max-age=0, must-revalidate
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 26 May 2012 01:17:49 GMT
+      ETag:
+      - ! '"28471ecef5d3704d5efe107780974eb5"'
+      Server:
+      - nginx/1.0.14
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=500
+      X-Runtime:
+      - '118'
+      Content-Length:
+      - '879'
+      Connection:
+      - keep-alive
+    body:
+      encoding: US-ASCII
+      string: ! '[{"slug":"707177e_04b3","app_name":"sbmp","upid":"43907058","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.1","rendezvous_url":null,"elapsed":1057,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:11 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68359174","command":"bundle
+        exec sidekiq -c 18","action":"up","process":"worker.1","rendezvous_url":null,"elapsed":1110,"type":"Ps","attached":false,"pretty_state":"up
+        for 18m","state":"up","transitioned_at":"2012/05/25 17:59:18 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68774505","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.2","rendezvous_url":null,"elapsed":1062,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:06 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68774505","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.3","rendezvous_url":null,"elapsed":1062,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:06 -0700"}]'
+    http_version:
+  recorded_at: Sat, 26 May 2012 01:15:32 GMT
+- request:
+    method: get
+    uri: https://api.heroku.com/apps/sbmp/ps
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip
+      User-Agent:
+      - heroku-rb/0.2.1
+      X-Heroku-API-Version:
+      - '3'
+      X-Ruby-Version:
+      - 1.9.3
+      X-Ruby-Platform:
+      - i686-linux
+  response:
+    status:
+      code: 200
+      message:
+    headers:
+      Cache-Control:
+      - private, max-age=0, must-revalidate
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 26 May 2012 01:27:34 GMT
+      ETag:
+      - ! '"dbf36b424503768f7eeab5164a64b79a"'
+      Server:
+      - nginx/1.0.14
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=500
+      X-Runtime:
+      - '149'
+      Content-Length:
+      - '879'
+      Connection:
+      - keep-alive
+    body:
+      encoding: US-ASCII
+      string: ! '[{"slug":"707177e_04b3","app_name":"sbmp","upid":"43907058","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.1","rendezvous_url":null,"elapsed":1057,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:11 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68359174","command":"bundle
+        exec sidekiq -c 18","action":"up","process":"worker.1","rendezvous_url":null,"elapsed":1110,"type":"Ps","attached":false,"pretty_state":"up
+        for 18m","state":"up","transitioned_at":"2012/05/25 17:59:18 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68774505","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.2","rendezvous_url":null,"elapsed":1062,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:06 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68774505","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.3","rendezvous_url":null,"elapsed":1062,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:06 -0700"}]'
+    http_version:
+  recorded_at: Sat, 26 May 2012 01:25:33 GMT
+- request:
+    method: get
+    uri: https://api.heroku.com/apps/sbmp/ps
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip
+      User-Agent:
+      - heroku-rb/0.2.1
+      X-Heroku-API-Version:
+      - '3'
+      X-Ruby-Version:
+      - 1.9.3
+      X-Ruby-Platform:
+      - i686-linux
+  response:
+    status:
+      code: 200
+      message:
+    headers:
+      Cache-Control:
+      - private, max-age=0, must-revalidate
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 26 May 2012 01:27:34 GMT
+      ETag:
+      - ! '"dbf36b424503768f7eeab5164a64b79a"'
+      Server:
+      - nginx/1.0.14
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=500
+      X-Runtime:
+      - '149'
+      Content-Length:
+      - '879'
+      Connection:
+      - keep-alive
+    body:
+      encoding: US-ASCII
+      string: ! '[{"slug":"707177e_04b3","app_name":"sbmp","upid":"43907058","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.1","rendezvous_url":null,"elapsed":1057,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:11 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68359174","command":"bundle
+        exec sidekiq -c 18","action":"up","process":"worker.1","rendezvous_url":null,"elapsed":1110,"type":"Ps","attached":false,"pretty_state":"up
+        for 18m","state":"up","transitioned_at":"2012/05/25 17:59:18 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68774505","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.2","rendezvous_url":null,"elapsed":1062,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:06 -0700"},{"slug":"707177e_04b3","app_name":"sbmp","upid":"68774505","command":"bundle
+        exec rails server thin -p $PORT","action":"up","process":"web.3","rendezvous_url":null,"elapsed":1062,"type":"Ps","attached":false,"pretty_state":"up
+        for 17m","state":"up","transitioned_at":"2012/05/25 18:00:06 -0700"}]'
+    http_version:
+  recorded_at: Sat, 26 May 2012 01:25:33 GMT

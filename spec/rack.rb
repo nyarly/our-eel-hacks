@@ -1,7 +1,7 @@
 require 'our-eel-hacks/rack'
 
 describe OurEelHacks::Rack do
-  use_vcr_cassette :record => :once
+  use_vcr_cassette "OurEelHacks"
 
   let :app_name do
     "sbmp"
