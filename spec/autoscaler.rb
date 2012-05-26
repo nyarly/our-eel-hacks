@@ -87,7 +87,7 @@ describe OurEelHacks::Autoscaler do
 
         #JDL: useful for debugging spec fails
         #Irritating in general use
-        test.logger = logger
+        #test.logger = logger
       end
     end
   end
