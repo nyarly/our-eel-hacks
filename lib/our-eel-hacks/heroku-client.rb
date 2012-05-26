@@ -1,4 +1,5 @@
 require 'heroku/api'
+
 module OurEelHacks
   class HerokuClient
     def initialize(logger, api_key)

@@ -8,7 +8,6 @@ group :test do
   gem 'fakeweb'
   gem 'vcr'
   gem 'celluloid'
-  #gem 'eventmachine'
 end
 
 gem 'rake'

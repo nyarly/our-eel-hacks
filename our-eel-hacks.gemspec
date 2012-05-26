@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.files		= %w[
     lib/our-eel-hacks/autoscaler.rb
     lib/our-eel-hacks/rack.rb
+    lib/our-eel-hacks/heroku-client.rb
     lib/our-eel-hacks/defer/event-machine.rb
     lib/our-eel-hacks/defer/celluloid.rb
     lib/our-eel-hacks/sidekiq.rb
@@ -30,8 +31,7 @@ Gem::Specification.new do |spec|
     spec/rack.rb
     spec_help/spec_helper.rb
     spec_help/gem_test_suite.rb
-    spec_help/cassettes/OurEelHacks_Rack.yml
-    spec_help/cassettes/OurEelHacks_Autoscaler.yml
+    spec_help/cassettes/OurEelHacks.yml
     spec_help/file-sandbox.rb
   ]
 
