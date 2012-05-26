@@ -1,4 +1,4 @@
-require 'heroku'
+require 'our-eel-hacks/heroku-client'
 
 module OurEelHacks
   class NullLogger
@@ -132,8 +132,11 @@ module OurEelHacks
     end
 
     API_CALLS_PER_SCALE = 2
-    def scale(metric)
-      logger.debug{ "Scaling request for #{@ps_type}: metric is: #{metric}" }
+    def scale(metric_hash)
+      logger.debug{ "Scaling request for #{@ps_type}: metrics are: #{metric_hash.inspect}" }
+
+      #TODO: multi-metric scaling logic
+      metric = metric_hash.to_a.last.last #Yeah, this is awful
       moment = Time.now
       if elapsed(last_scaled, moment) < millis_til_next_scale
         logger.debug{ "Not scaling: elapsed #{elapsed(last_scaled, moment)} less than computed #{millis_til_next_scale}" }
@@ -232,11 +235,7 @@ module OurEelHacks
     end
 
     def heroku
-      @heroku ||= Heroku::Client.new("", heroku_api_key).tap do |client|
-        unless client.info(app_name)[:stack] == "cedar"
-          raise "#{self.class.name} built against cedar stack"
-        end
-      end
+      @heroku ||= HerokuClient.new(logger, "", heroku_api_key)
     end
 
     def set_dynos(count,moment)

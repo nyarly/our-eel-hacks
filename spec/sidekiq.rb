@@ -37,7 +37,7 @@ describe OurEelHacks::Sidekiq do
   end
 
   it "should pass the metric to the autoscaler" do
-    OurEelHacks::Autoscaler.instance_for(:test).should_receive(:scale).with(100)
+    OurEelHacks::Autoscaler.instance_for(:test).should_receive(:scale).with({"queue_length" => 100})
     middleware.call(String, {}, :default) do
     end
   end

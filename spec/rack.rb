@@ -12,6 +12,7 @@ describe OurEelHacks::Rack do
   end
 
   before :each do
+    OurEelHacks::HerokuClient.processing_budget = 3
     OurEelHacks::Autoscaler.configure(:test) do |test|
       test.app_name = app_name
       test.heroku_api_key = api_key
@@ -35,7 +36,7 @@ describe OurEelHacks::Rack do
 
 
   it "should pass the metric to the autoscaler" do
-    OurEelHacks::Autoscaler.instance_for(:test).should_receive(:scale).with(100)
+    OurEelHacks::Autoscaler.instance_for(:test).should_receive(:scale).with({env_field => 100})
     middleware.call({env_field => "100"})
   end
 end

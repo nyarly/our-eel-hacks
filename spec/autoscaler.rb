@@ -25,23 +25,23 @@ describe OurEelHacks::Autoscaler do
   end
 
   let :ideal_value do
-    25
+    { "metric" => 25 }
   end
 
   let :soft_high do
-    35
+    { "metric" => 35 }
   end
 
   let :soft_low do
-    3
+    { "metric" => 3 }
   end
 
   let :hard_high do
-    100
+    { "metric" => 100 }
   end
 
   let :hard_low do
-    -10
+    { "metric" => -10 }
   end
 
   let :dyno_count do
@@ -89,6 +89,8 @@ describe OurEelHacks::Autoscaler do
         test.upper_limits.soft = 30
         test.upper_limits.hard = 50
 
+        #JDL: useful for debugging spec fails
+        #Irritating in general use
         #test.logger = logger
       end
     end
@@ -103,9 +105,15 @@ describe OurEelHacks::Autoscaler do
   end
 
   before :each do
+    OurEelHacks::HerokuClient.processing_budget = 3
     heroku.stub!(:ps_scale)
     time_adjust(0)
     autoscaler.scale(ideal_value)
+  end
+
+  def no_requests
+    OurEelHacks::HerokuClient.processing_budget = 0
+    heroku.should_not_receive(:ps_scale)
   end
 
   describe "scaling frequency" do
@@ -113,7 +121,10 @@ describe OurEelHacks::Autoscaler do
     it "should not scale too soon" do
       time_adjust(expected_scale_frequency - 5)
 
-      heroku.should_not_receive(:ps_scale)
+      no_requests
+      autoscaler.scale(hard_high)
+      autoscaler.scale(hard_high)
+      autoscaler.scale(hard_high)
       autoscaler.scale(hard_high)
     end
 
@@ -163,15 +174,19 @@ describe OurEelHacks::Autoscaler do
     describe "if soft_duration hasn't elapsed" do
       before :each do
         time_adjust((expected_scale_frequency * 2) + soft_dur - 5)
-        heroku.should_not_receive(:ps_scale)
+        no_requests
       end
 
       it "should not scale up" do
+        autoscaler.scale(soft_high)
+        autoscaler.scale(soft_high)
         autoscaler.scale(soft_high)
       end
 
       it "should not scale down" do
         autoscaler.scale(soft_low)
+        autoscaler.scale(soft_high)
+        autoscaler.scale(soft_high)
       end
     end
 

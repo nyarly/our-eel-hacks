@@ -4,15 +4,15 @@ module OurEelHacks
   class Rack < Middleware
     include Defer::EventMachine
 
-    def initialize(app, env_field, flavor = :web)
+    def initialize(app, env_fields, flavor = :web)
       super(flavor)
-      @env_field = env_field
+      @env_fields = [*env_fields].map(&:to_s)
       @app = app
     end
 
     def call(env)
       begin
-        autoscale(metric_from(env))
+        autoscale(metrics_from(env))
       rescue => ex
         puts "Problem in autoscaling: #{ex.inspect}"
       end
@@ -20,10 +20,10 @@ module OurEelHacks
       @app.call(env)
     end
 
-    def metric_from(env)
-      (Integer(env[@env_field]) rescue 0).tap{|val|
-        puts "#{@env_field} => #{env[@env_field]} : #{val}"
-      }
+    def metrics_from(env)
+      Hash[ @env_fields.map do |field|
+        [field, (Integer(env[field]) rescue 0)]
+      end ]
     end
   end
 

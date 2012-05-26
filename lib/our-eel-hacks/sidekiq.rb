@@ -10,7 +10,7 @@ module OurEelHacks
 
     def call(worker_class, item, queue)
       begin
-        autoscale(get_queue_length(queue).tap{|length| puts "Queue length: #{length}"})
+        autoscale(get_queue_length(queue))
       rescue => ex
         puts "Problem in autoscaling: #{ex.inspect}"
       end
@@ -18,9 +18,9 @@ module OurEelHacks
     end
 
     def get_queue_length(queue)
-      ::Sidekiq.redis do |conn|
+      {"queue_length" => ::Sidekiq.redis do |conn|
         conn.llen("queue:#{queue}") || 0
-      end
+      end }
     end
   end
 end
